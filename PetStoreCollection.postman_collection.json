@@ -1,0 +1,387 @@
+{
+	"info": {
+		"_postman_id": "79cc1877-c1d4-411c-8016-7d2e3e8e80ab",
+		"name": "PetStoreCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28293803",
+		"_collection_link": "https://restless-sunset-306564.postman.co/workspace/TestPetStoreWs~2811569e-a537-4fa0-b19c-f791f24cf85b/collection/28293803-79cc1877-c1d4-411c-8016-7d2e3e8e80ab?action=share&creator=28293803&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "POST",
+			"item": [
+				{
+					"name": "Add Pet",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"petId\": 1,\r\n  \"quantity\": 1,\r\n  \"shipDate\": \"2023-07-13T20:14:43.329Z\",\r\n  \"status\": \"placed\",\r\n  \"complete\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/pet",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"pet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pet Place Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"POST Pet Place Order returns status code 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body is correct\", function () {\r",
+									"    var resp = pm.response.json();\r",
+									"    pm.response.to.have.body(resp);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"POST Pet Place Order returns json and all the order properties\", function(){\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"    var resp = pm.response.json();\r",
+									"    pm.expect(resp).to.have.property(\"id\")\r",
+									"    pm.expect(resp).to.have.property(\"petId\")\r",
+									"    pm.expect(resp).to.have.property(\"quantity\")\r",
+									"    pm.expect(resp).to.have.property(\"shipDate\")    \r",
+									"    pm.expect(resp).to.have.property(\"status\")\r",
+									"    pm.expect(resp).to.have.property(\"complete\")   \r",
+									"});\r",
+									"\r",
+									"pm.test(\"POST Pet Place Order returns json which matches request body data  except shipDate\", function(){\r",
+									"    var requestBody = JSON.parse(pm.request.body.raw);\r",
+									"    var responseBody = pm.response.json();\r",
+									"    pm.expect(requestBody.id).to.equal(responseBody.id); \r",
+									"    pm.expect(requestBody.petId).to.equal(responseBody.petId); \r",
+									"    pm.expect(requestBody.quantity).to.equal(responseBody.quantity); \r",
+									"    pm.expect(requestBody.status).to.equal(responseBody.status); \r",
+									"    pm.expect(requestBody.complete).to.equal(responseBody.complete); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": {{order_id}},\r\n  \"petId\": 333,\r\n  \"quantity\": 2,\r\n  \"shipDate\": \"2023-07-14T09:37:03.492Z\",\r\n  \"status\": \"placed\",\r\n  \"complete\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ps_url}}/store/order",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pet Place Order Incorrect Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"POST Pet Place Order returns status code 400 if data is incorrect\", function(){\r",
+									"    pm.response.to.have.status(400);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 7,\r\n  \"petId\": 333,\r\n  \"quantity\": 2q,\r\n  \"shipDate\": \"2023-07-14T09:37:03.492Z\",\r\n  \"status\": \"placed\",\r\n  \"complete\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ps_url}}/store/order",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET",
+			"item": [
+				{
+					"name": "Get Order By Correct Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET Order by Id returns json with the same Id\", function(){\r",
+									"    var responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody.id).to.equal(parseInt(pm.variables.get(\"order_id\")));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ps_url}}/store/order/{{order_id}}",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Inventory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET Invertory returns status code 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Body exists and has JSON format\", function () {\r",
+									"    var resp = pm.response.json();\r",
+									"    pm.response.to.have.body(resp);\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ps_url}}/store/inventory",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"inventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order By Incorrect Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET Order by Incorrect Id returns code 404\", function(){\r",
+									"        pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"order_id\", 121121)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ps_url}}/store/order/{{order_id}}",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DELETE",
+			"item": [
+				{
+					"name": "Delete order by existing Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Order with existing Id returns status code 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set(\"order_id\", 7)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{ps_url}}/store/order/{{order_id}}",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete order by nonexisting Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Delete Order with nonexisting Id returns status code 404\", function(){\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{ps_url}}/store/order/{{order_id}}",
+							"host": [
+								"{{ps_url}}"
+							],
+							"path": [
+								"store",
+								"order",
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ps_url",
+			"value": "https://petstore.swagger.io/v2",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
